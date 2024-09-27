@@ -1,0 +1,244 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Рониколенд - Видобування Ресурсів</title>
+    <style>
+        @font-face {
+            font-family: 'Minecraft';
+            src: url('https://fonts.cdnfonts.com/s/22845/Minecraft-Regular.woff') format('woff');
+        }
+
+        body {
+            font-family: 'Minecraft', sans-serif;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            font-size: 50px;
+            margin-bottom: 10px;
+            color: #3eaf76;
+            text-shadow: 3px 3px #2E8B57;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .menu {
+            display: block;
+        }
+
+        .menu button {
+            padding: 10px;
+            font-size: 20px;
+            background-color: #8B4513;
+            border: none;
+            color: white;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .menu button:hover {
+            background-color: #A0522D;
+        }
+
+        .game {
+            display: none;
+        }
+
+        .resources {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .resources div {
+            margin: 10px 15px;
+            font-size: 18px;
+        }
+
+        .game button {
+            padding: 10px;
+            margin: 5px;
+            background-color: #8B4513;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .game button:hover {
+            background-color: #A0522D;
+        }
+
+        .reward, .rank {
+            font-size: 20px;
+            color: #FFD700;
+            margin-top: 15px;
+        }
+
+        .rank {
+            color: #00BFFF;
+            font-weight: bold;
+        }
+
+        .armor-icon {
+            width: 40px;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .netherite-button, .netherack-button {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Рониколенд</h1>
+    <p>Крут той, хто старається!</p>
+
+    <!-- Меню -->
+    <div class="menu">
+        <button onclick="startGame()">Почати Гру</button>
+        <button onclick="openOptions()">Опції</button>
+        <button onclick="exitGame()">Вийти</button>
+    </div>
+
+    <!-- Гра -->
+    <div class="game">
+        <h2>Видобування Ресурсів</h2>
+        <div class="resources">
+            <div>Дерево: <span id="wood">0</span> / 1000</div>
+            <div>Камінь: <span id="stone">0</span> / 1000</div>
+            <div>Алмази: <span id="diamond">0</span></div>
+            <div>Незеріти: <span id="netherite">0</span></div>
+            <div>Незерак: <span id="netherack">0</span></div>
+        </div>
+        <button onclick="gatherWood()">Добувати Дерево</button>
+        <button onclick="gatherStone()">Добувати Камінь</button>
+        <button id="netheriteButton" class="netherite-button" onclick="gatherNetherite()">Добувати Незеріти</button>
+        <button id="netherackButton" class="netherack-button" onclick="gatherNetherack()">Добувати Незерак</button>
+        <div class="reward" id="rewardMsg"></div>
+        <div class="rank" id="rankMsg"></div>
+        <img id="armorIcon" class="armor-icon" src="https://i.imgur.com/ZQarUoC.png" alt="Алмазна Броня">
+    </div>
+
+    <script>
+        let woodCount = 0;
+        let stoneCount = 0;
+        let diamondCount = 0;
+        let netheriteCount = 0;
+        let netherackCount = 0;
+        let netheriteIngotCount = 0;
+        let hasDiamondPickaxe = false;
+
+        const maxResources = 1000;
+        const diamondForRank = 28;
+        const netheriteForRank = 4;
+        const netherackForIngot = 50;
+
+        function startGame() {
+            document.querySelector('.menu').style.display = 'none';
+            document.querySelector('.game').style.display = 'block';
+        }
+
+        function openOptions() {
+            alert('Опції поки недоступні');
+        }
+
+        function exitGame() {
+            document.querySelector('.menu').style.display = 'block';
+            document.querySelector('.game').style.display = 'none';
+        }
+
+        function gatherWood() {
+            if (woodCount < maxResources) {
+                woodCount++;
+                document.getElementById('wood').textContent = woodCount;
+                checkForReward();
+            }
+        }
+
+        function gatherStone() {
+            if (stoneCount < maxResources) {
+                stoneCount++;
+                document.getElementById('stone').textContent = stoneCount;
+                checkForReward();
+            }
+        }
+
+        function checkForReward() {
+            if (woodCount >= 100 && stoneCount >= 100) {
+                giveReward();
+                woodCount -= 100;
+                stoneCount -= 100;
+                document.getElementById('wood').textContent = woodCount;
+                document.getElementById('stone').textContent = stoneCount;
+            }
+
+            if (diamondCount >= diamondForRank && !hasDiamondPickaxe) {
+                document.getElementById('rankMsg').textContent = 'Ранг: Алмазник';
+                document.getElementById('armorIcon').style.display = 'block';
+                hasDiamondPickaxe = true;
+                document.getElementById('netheriteButton').style.display = 'inline-block';
+                document.getElementById('netherackButton').style.display = 'inline-block';
+            }
+
+            if (netheriteIngotCount >= netheriteForRank) {
+                document.getElementById('rankMsg').textContent = 'Ранг: Незерка';
+            }
+        }
+
+        function giveReward() {
+            const diamondsAwarded = Math.floor(Math.random() * 8) + 1;
+            diamondCount += diamondsAwarded;
+            document.getElementById('diamond').textContent = diamondCount;
+            document.getElementById('rewardMsg').textContent = `Ви отримали ${diamondsAwarded} алмаз(ів)!`;
+            setTimeout(() => {
+                document.getElementById('rewardMsg').textContent = '';
+            }, 3000);
+        }
+
+        function gatherNetherite() {
+            if (hasDiamondPickaxe) {
+                netheriteCount++;
+                document.getElementById('netherite').textContent = netheriteCount;
+
+                if (netheriteCount >= netherackForIngot) {
+                    netheriteIngotCount++;
+                    netheriteCount -= netherackForIngot;
+                    document.getElementById('rewardMsg').textContent = `Ви отримали 1 Незерітовий сліток!`;
+                    checkForReward();
+                    setTimeout(() => {
+                        document.getElementById('rewardMsg').textContent = '';
+                    }, 3000);
+                }
+            }
+        }
+
+        function gatherNetherack() {
+            if (hasDiamondPickaxe) {
+                netherackCount++;
+                document.getElementById('netherack').textContent = netherackCount;
+
+                if (netherackCount >= 50) {
+                    netherackCount -= 50;
+                    document.getElementById('rewardMsg').textContent = `Ви здобули 1 Незерак!`;
+                    setTimeout(() => {
+                        document.getElementById('rewardMsg').textContent = '';
+                    }, 3000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
